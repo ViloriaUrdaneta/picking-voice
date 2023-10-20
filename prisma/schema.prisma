@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+model barcode_product {
+  id         Int     @id @default(autoincrement())
+  product_id Int?
+  barcode_id Int?
+  type       String? @db.VarChar(255)
+  active     Boolean @default(true)
+
+  @@index([barcode_id], map: "barcode_id")
+  @@index([product_id], map: "product_id")
+}
+
+model barcodes {
+  id             Int    @id @default(autoincrement())
+  barcode_number String @db.VarChar(255)
+}
+
+model count_items {
+  id         Int       @id @default(autoincrement())
+  product_id Int?
+  counted    Boolean?
+  quantity   Int?
+  type       String?   @db.VarChar(255)
+  barcode_id Int?
+  route      String?   @db.VarChar(255)
+  created_at DateTime? @db.Timestamp(0)
+
+  @@index([barcode_id], map: "barcode_id")
+  @@index([product_id], map: "product_id")
+}
+
+model freight_items {
+  id         Int       @id @default(autoincrement())
+  UD         Int?
+  UE         Int?
+  UV         Int?
+  product_id Int?
+  freight    String?   @db.VarChar(255)
+  route      String?   @db.VarChar(255)
+  created_at DateTime? @db.Timestamp(0)
+
+  @@index([product_id], map: "product_id")
+}
+
+model positions {
+  id              Int       @id @default(autoincrement())
+  position_code   String    @db.VarChar(255)
+  position_number Int?
+  occupied        Boolean
+  due_date        DateTime? @db.Timestamp(0)
+  product_id      Int?
+
+  @@index([product_id], map: "product_id")
+}
+
+model products {
+  id       Int     @id @default(autoincrement())
+  ERP      String  @db.VarChar(255)
+  type     String? @db.VarChar(255)
+  SKU      String? @db.VarChar(255)
+  measure  String? @db.VarChar(255)
+  category String? @db.VarChar(255)
+  blocked  Boolean
+}
+
+model user {
+  id        Int       @id @default(autoincrement()) @db.UnsignedInt
+  name      String    @db.VarChar(50)
+  rol       String    @db.VarChar(50)
+  createdAt DateTime? @default(now()) @db.Timestamp(0)
+  password  String    @db.VarChar(200)
+  email     String    @db.VarChar(50)
+}
