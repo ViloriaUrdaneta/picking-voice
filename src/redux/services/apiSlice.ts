@@ -16,7 +16,7 @@ export const apiSlice =  createApi({
         getProductById: builder.query<Product, {id: string}>({
             query: (id) => `/products/${id}`
         }),
-        createProfuct: builder.mutation({
+        createProduct: builder.mutation({
             query: (newProduct) => ({
                 url: '/products',
                 method: "POST",
@@ -27,4 +27,4 @@ export const apiSlice =  createApi({
     })
 })
 
-export const { useGetProductsQuery, useGetProductByIdQuery, useCreateProfuctMutation } = apiSlice;
+export const { useGetProductsQuery, useGetProductByIdQuery, useCreateProductMutation } = apiSlice;

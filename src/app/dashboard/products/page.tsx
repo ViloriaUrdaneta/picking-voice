@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import ProductForm from '@/components/ProductForm'
 import ProductTable from '@/components/ProductTable'
 import { Product } from '@/types';
-import { useGetProductsQuery } from '@/redux/services/apiSlice';
+import { useGetProductsQuery, useCreateProductMutation } from '@/redux/services/apiSlice';
 
 export default function ProductListPage() {
 
@@ -15,6 +15,7 @@ export default function ProductListPage() {
     const [isEANModalOpen, setIsEANModalOpen] = useState(false);
 
     const { data, error, isLoading, isFetching } = useGetProductsQuery(null);
+    const [ createProduct ] = useCreateProductMutation()
 
     useEffect(() => {
         if (data) {
@@ -29,6 +30,7 @@ export default function ProductListPage() {
 
     const handleSubmit = async (newProduct: Product) => {
         try {
+            createProduct(newProduct)
             closeModal();
             setSelectedProduct(null);
         } catch (err) {
