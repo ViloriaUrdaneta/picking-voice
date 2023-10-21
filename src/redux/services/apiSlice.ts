@@ -29,10 +29,10 @@ export const apiSlice = createApi({
             providesTags: ["Freights"],
         }),
         createFreights: builder.mutation({
-            query: (freights) => ({
+            query: (results) => ({
                 url: '/freights',
                 method: "POST",
-                body: freights,
+                body: results,
             }),
             invalidatesTags: ["Freights"],
         }),

@@ -19,8 +19,9 @@ export async function GET() {
 
 export async function POST(req: Request) {
     try {
-        const { results }: RequestBody = await  req.json();
-        const ERPList = results.map(objeto => objeto.productCode);
+        const results = await  req.json();
+        console.log()
+        const ERPList = results.map((objeto: { productCode: any; }) => objeto.productCode);
         const products = await prisma.products.findMany({
             where: {
                 ERP: {
@@ -36,7 +37,7 @@ export async function POST(req: Request) {
         products.forEach(product => {
             ERPToIdMap[product.ERP] = product.id;
         });
-        const freightItems = results.map((obj) => {
+        const freightItems = results.map((obj: { productCode: any; UD: any; UE: any; UV: any; freight: any; route: any; }) => {
             const ERP = obj.productCode
             return {
                 UD: obj.UD,
@@ -55,7 +56,7 @@ export async function POST(req: Request) {
         console.log('Datos recibidos del cliente:', newFreightItems);
         return NextResponse.json({message: 'Productos actualizados', newFreightItems})
     } catch (error) {
-        console.log(error)
+        console.log('error: ', error)
         return NextResponse.json({message: 'Error'})
     }
 };
