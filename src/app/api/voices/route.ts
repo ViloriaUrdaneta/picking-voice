@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/libs/prisma';
-import { voiceList } from '@/types'
+import { VoiceList } from '@/types'
 
 interface item {
     id: number;
@@ -84,7 +84,7 @@ export async function GET(req: Request) {
                 obj.SKU = productSKUMap[productId]
             }
         });
-        const voiceItemListgropu: voiceList = {};
+        const voiceItemListgropu: VoiceList = {};
         itemList.forEach(obj => {
             const { route, ERP, SKU, freight, position_number } = obj;
             if (!voiceItemListgropu[`Nueva ruta ${route}`]) {

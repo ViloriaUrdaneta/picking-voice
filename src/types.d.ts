@@ -56,21 +56,21 @@ export interface Product {
     blocked: boolean;
 }
 
-export interface countingItem {
+export interface CountingItem {
     product: string;
     quantity: string
 }
 
-export interface countingList {
+export interface CountingList {
     [key: string]: Array<countingItem>;
 }
 
-export interface voiceItem {
+export interface VoiceItem {
     product: string;
     quantity: string
 }
 
-export interface voiceList {
+export interface VoiceList {
     [key: string]: Array<voiceItem>;
 }
 

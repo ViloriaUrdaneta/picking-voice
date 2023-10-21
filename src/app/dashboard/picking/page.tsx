@@ -1,9 +1,10 @@
 "use client"
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import * as XLSX from 'xlsx';
-import { useGetFreigthsQuery, useCreateFreightsMutation, useGetVoicesQuery } from '@/redux/services/apiSlice';
+import { useGetFreigthsQuery, useCreateFreightsMutation, useGetVoicesQuery, useGetCountingQuery } from '@/redux/services/apiSlice';
 import { FreightItem } from '@/types';
 import { exportVoices } from '@/services/voiceService'
+import { exportCounting } from '@/services/countingService';
 
 
 interface ExcelDataResult {
@@ -20,10 +21,10 @@ const Excell = () => {
     const [typeError, setTypeError] = useState<string | null>(null);
 
     const { data: freightsData, error: freightsError, isLoading: freightsLoading } = useGetFreigthsQuery(null);
-    const { data: voicesData, error: voicesErrod, isLoading: voicesLoading } = useGetVoicesQuery(null);
+    const { data: voicesData, error: voicesError, isLoading: voicesLoading } = useGetVoicesQuery(null);
+    const { data: countingData, error: countingError, isLoading: countingLoading } = useGetCountingQuery(null);
     const [ createFreights ] = useCreateFreightsMutation()
 
-    console.log('voicesData: ', voicesData)
 
     async function readExcelFile(file:File): Promise<ExcelDataResult> {
         return new Promise((resolve, reject) => {
@@ -118,7 +119,8 @@ const Excell = () => {
     }
 
     const exportRoutes = async () => {
-      if(voicesData) await exportVoices(voicesData)
+      if(voicesData) await exportVoices(voicesData);
+      if(countingData) await exportCounting(countingData)
     };
 
 
