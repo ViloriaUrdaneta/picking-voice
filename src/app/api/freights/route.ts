@@ -9,7 +9,7 @@ interface RequestBody {
 export async function GET() {
     try {
         const freights = await prisma.freight_items.findMany();
-        return NextResponse.json({message: 'Productos conseguidos', freights})
+        return NextResponse.json(freights)
     } catch (error) {
         if(error instanceof Error){
             return NextResponse.json({message: error.message},{status: 500})
@@ -20,7 +20,6 @@ export async function GET() {
 export async function POST(req: Request) {
     try {
         const results = await  req.json();
-        console.log()
         const ERPList = results.map((objeto: { productCode: any; }) => objeto.productCode);
         const products = await prisma.products.findMany({
             where: {

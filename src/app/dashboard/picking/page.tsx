@@ -1,8 +1,9 @@
 "use client"
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import * as XLSX from 'xlsx';
-import { useCreateFreightsMutation, useGetCountingQuery, useGetVoicesQuery } from '@/redux/services/apiSlice';
+import { useGetFreigthsQuery, useCreateFreightsMutation, useGetVoicesQuery } from '@/redux/services/apiSlice';
 import { FreightItem } from '@/types';
+import { exportVoices } from '@/services/voiceService'
 
 
 interface ExcelDataResult {
@@ -18,7 +19,11 @@ const Excell = () => {
     const [excelFiles, setExcelFiles] = useState<FileList | null>(null);
     const [typeError, setTypeError] = useState<string | null>(null);
 
+    const { data: freightsData, error: freightsError, isLoading: freightsLoading } = useGetFreigthsQuery(null);
+    const { data: voicesData, error: voicesErrod, isLoading: voicesLoading } = useGetVoicesQuery(null);
     const [ createFreights ] = useCreateFreightsMutation()
+
+    console.log('voicesData: ', voicesData)
 
     async function readExcelFile(file:File): Promise<ExcelDataResult> {
         return new Promise((resolve, reject) => {
@@ -113,23 +118,7 @@ const Excell = () => {
     }
 
     const exportRoutes = async () => {
-        try {
-          /*
-            const responseCounting = await axios.get('/api/counting', {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-            const responseVoice = await axios.get('/api/voices', {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-            console.log('responseVoice', responseVoice);
-            console.log('responseCounting', responseCounting);*/
-        } catch (error) {
-            console.error('Error en la exportación', error);
-        }
+      if(voicesData) await exportVoices(voicesData)
     };
 
 

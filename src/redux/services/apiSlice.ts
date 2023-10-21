@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { Product, FreightItem, countingList, voiceList } from '@/types'
+import { Product, FreightItem, Position, countingList, voiceList } from '@/types'
 
 
 export const apiSlice = createApi({
@@ -41,6 +41,9 @@ export const apiSlice = createApi({
         }),
         getVoices: builder.query<voiceList, null>({
             query: () => '/voices',
+        }),
+        getPositions: builder.query<Position[], null>({
+            query: () => '/positions',
         })
     })
 })

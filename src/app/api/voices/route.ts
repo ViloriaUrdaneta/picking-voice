@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/libs/prisma';
-import * as XLSX from 'xlsx';
 import { voiceList } from '@/types'
 
 interface item {
@@ -13,7 +12,6 @@ interface item {
     created_at: Date | null;
     position_number: number | null; 
 }
-
 
 export async function GET(req: Request) {
     const today = new Date().toISOString().split('T')[0];
@@ -96,26 +94,7 @@ export async function GET(req: Request) {
                 part.trim() === 'DSPL' || part.trim() === 'PQTE' || part.trim() === 'POTE' || part.trim() === 'BARR' || part.trim() === 'BLSA' ? 'UNIDAD' : part).join(' ') : "ups", });
         })
 
-        for (const route in voiceItemListgropu) {
-            const dataArray = voiceItemListgropu[route];
-        
-            const dataAsArray = dataArray.map(item => [
-                item.product,
-                item.quantity,
-            ]);
-            const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.aoa_to_sheet([[`RECORRIDO ${route}`], ...dataAsArray]);
-        
-            XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-        
-            const filePath = `C:\\Users\\Miguel Viloria\\Desktop\\${route}.xlsx`;
-        
-            XLSX.writeFile(wb, filePath);
-        
-            console.log(`Archivo Excel para ${route} generado con éxito`);
-        }
-
-        return NextResponse.json({message: 'Productos conseguidos', voiceItemListgropu})
+        return NextResponse.json(voiceItemListgropu)
     } catch (error) {
         if(error instanceof Error){
             return NextResponse.json({message: error.message},{status: 500})

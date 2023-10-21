@@ -73,3 +73,12 @@ export interface voiceItem {
 export interface voiceList {
     [key: string]: Array<voiceItem>;
 }
+
+export interface Position {
+    id: number;
+    position_code: string;
+    position_number: number | null;
+    occupied: boolean;
+    due_date: Date | null;
+    product_id: number | null
+}
