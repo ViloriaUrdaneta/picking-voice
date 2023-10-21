@@ -14,7 +14,7 @@ export default function ProductListPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEANModalOpen, setIsEANModalOpen] = useState(false);
 
-    const { data, error, isLoading, isFetching } = useGetProductsQuery(null);
+    const { data, error, isLoading } = useGetProductsQuery(null);
     const [ createProduct ] = useCreateProductMutation()
 
     useEffect(() => {

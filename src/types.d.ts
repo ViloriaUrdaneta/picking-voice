@@ -32,12 +32,12 @@ export interface FreightList {
     list: Array<FreightItem>
 }
 
-interface Barcode {
+export interface Barcode {
     id: number;
     barcode_number: string;
 }
 
-interface BarcodeProduct {
+export interface BarcodeProduct {
     id: number;
     product_id: number;
     barcode_id: number;
@@ -46,7 +46,7 @@ interface BarcodeProduct {
     barcodes: Barcode;
 }
 
-interface Product {
+export interface Product {
     id: number;
     ERP: string;
     type: string;
@@ -54,4 +54,22 @@ interface Product {
     measure: string;
     category: string;
     blocked: boolean;
+}
+
+export interface countingItem {
+    product: string;
+    quantity: string
+}
+
+export interface countingList {
+    [key: string]: Array<countingItem>;
+}
+
+export interface voiceItem {
+    product: string;
+    quantity: string
+}
+
+export interface voiceList {
+    [key: string]: Array<voiceItem>;
 }

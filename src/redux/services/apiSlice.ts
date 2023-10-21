@@ -1,13 +1,13 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { Product } from '@/types'
+import { Product, FreightItem, countingList, voiceList } from '@/types'
 
 
-export const apiSlice =  createApi({
+export const apiSlice = createApi({
     reducerPath: 'api',
     baseQuery: fetchBaseQuery({
         baseUrl: '../api'
     }),
-    tagTypes: ['Products'],
+    tagTypes: ['Products', 'Freights'],
     endpoints: (builder) => ({
         getProducts: builder.query<Product[], null>({
             query: () => '/products',
@@ -23,8 +23,34 @@ export const apiSlice =  createApi({
                 body: newProduct,
             }),
             invalidatesTags: ["Products"],
+        }),
+        getFreigths: builder.query<FreightItem[], null>({
+            query: () => '/freights',
+            providesTags: ["Freights"],
+        }),
+        createFreights: builder.mutation({
+            query: (freights) => ({
+                url: '/freights',
+                method: "POST",
+                body: freights,
+            }),
+            invalidatesTags: ["Freights"],
+        }),
+        getCounting: builder.query<countingList, null>({
+            query: () => '/counting',
+        }),
+        getVoices: builder.query<voiceList, null>({
+            query: () => '/voices',
         })
     })
 })
 
-export const { useGetProductsQuery, useGetProductByIdQuery, useCreateProductMutation } = apiSlice;
+export const { 
+    useGetProductsQuery, 
+    useGetProductByIdQuery, 
+    useCreateProductMutation, 
+    useGetFreigthsQuery,
+    useCreateFreightsMutation,
+    useGetCountingQuery,
+    useGetVoicesQuery
+} = apiSlice;

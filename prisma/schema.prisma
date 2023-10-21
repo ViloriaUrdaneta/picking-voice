@@ -14,6 +14,8 @@ model barcode_product {
   barcode_id Int?
   type       String? @db.VarChar(255)
   active     Boolean @default(true)
+  products   products? @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "barcode_product_ibfk_1")
+  barcodes   barcodes? @relation(fields: [barcode_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "barcode_product_ibfk_2")
 
   @@index([barcode_id], map: "barcode_id")
   @@index([product_id], map: "product_id")
@@ -22,6 +24,8 @@ model barcode_product {
 model barcodes {
   id             Int    @id @default(autoincrement())
   barcode_number String @db.VarChar(255)
+  barcode_product barcode_product[]
+  count_items     count_items[]
 }
 
 model count_items {
@@ -33,6 +37,8 @@ model count_items {
   barcode_id Int?
   route      String?   @db.VarChar(255)
   created_at DateTime? @db.Timestamp(0)
+  products   products? @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "count_items_ibfk_1")
+  barcodes   barcodes? @relation(fields: [barcode_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "count_items_ibfk_2")
 
   @@index([barcode_id], map: "barcode_id")
   @@index([product_id], map: "product_id")
@@ -47,6 +53,7 @@ model freight_items {
   freight    String?   @db.VarChar(255)
   route      String?   @db.VarChar(255)
   created_at DateTime? @db.Timestamp(0)
+  products   products? @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "freight_items_ibfk_1")
 
   @@index([product_id], map: "product_id")
 }
@@ -58,6 +65,8 @@ model positions {
   occupied        Boolean
   due_date        DateTime? @db.Timestamp(0)
   product_id      Int?
+  products        products? @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "positions_ibfk_1")
+
 
   @@index([product_id], map: "product_id")
 }
@@ -70,6 +79,10 @@ model products {
   measure  String? @db.VarChar(255)
   category String? @db.VarChar(255)
   blocked  Boolean
+  barcode_product barcode_product[]
+  count_items     count_items[]
+  freight_items   freight_items[]
+  positions       positions[]
 }
 
 model user {
