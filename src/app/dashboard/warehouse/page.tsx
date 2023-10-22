@@ -29,6 +29,7 @@ export default function WarehousePage() {
     useEffect(() => {
       if(data){
         setPositions(data)
+        console.log(data)
       }
       setLoading(false)
     },[data, error, isLoading]);
