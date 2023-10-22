@@ -6,11 +6,11 @@ export const apiSlice = createApi({
     baseQuery: fetchBaseQuery({
         baseUrl: '../api'
     }),
-    tagTypes: ['Products', 'Freights'],
+    tagTypes: ['Products', 'Freights', 'Positions'],
     endpoints: (builder) => ({
         getProducts: builder.query<Product[], null>({
             query: () => '/products',
-            providesTags: ["Products"],
+            providesTags: ["Products"]
         }),
         getProductById: builder.query<Product, {id: string}>({
             query: (id) => `/products/${id}`
@@ -19,31 +19,48 @@ export const apiSlice = createApi({
             query: (newProduct) => ({
                 url: '/products',
                 method: "POST",
-                body: newProduct,
+                body: newProduct
             }),
-            invalidatesTags: ["Products"],
+            invalidatesTags: ["Products"]
         }),
         getFreigths: builder.query<FreightItem[], null>({
             query: () => '/freights',
-            providesTags: ["Freights"],
+            providesTags: ["Freights"]
         }),
         createFreights: builder.mutation({
             query: (results) => ({
                 url: '/freights',
                 method: "POST",
-                body: results,
+                body: results
             }),
             invalidatesTags: ["Freights"],
         }),
         getCounting: builder.query<CountingList, null>({
-            query: () => '/counting',
+            query: () => '/counting'
         }),
         getVoices: builder.query<VoiceList, null>({
-            query: () => '/voices',
+            query: () => '/voices'
         }),
         getPositions: builder.query<Position[], null>({
             query: () => '/positions',
-        })
+            providesTags: ["Positions"]
+        }),
+        createPosition: builder.mutation({
+            query: ({product, position}) => ({
+                url: '/positions',
+                method: "POST",
+                body: {product, position}
+            }),
+            invalidatesTags: ["Positions"],
+        }),
+        clearPosition: builder.mutation({
+            query: (position) => ({
+                url: '/positions',
+                method: "PUT",
+                body: position
+            }),
+            invalidatesTags: ["Positions"],
+        }),
     })
 })
 
@@ -54,5 +71,8 @@ export const {
     useGetFreigthsQuery,
     useCreateFreightsMutation,
     useGetCountingQuery,
-    useGetVoicesQuery
+    useGetVoicesQuery,
+    useGetPositionsQuery,
+    useCreatePositionMutation,
+    useClearPositionMutation
 } = apiSlice;
