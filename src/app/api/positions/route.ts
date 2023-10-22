@@ -38,7 +38,6 @@ export async function POST(req: Request) {
             console.log(updatedProduct)
         }
         const positions = await prisma.positions.findMany();
-        console.log('positions: ', positions)
         return NextResponse.json({message: 'Productos actualizados', positions})
     } catch (error) {
         console.log(error)

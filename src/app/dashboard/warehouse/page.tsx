@@ -3,9 +3,9 @@ import React, { FormEvent, useEffect, useRef, useState } from 'react';
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import ControlPanel from '@/components/ControlPanel';
-import { useCreatePositionMutation, useClearPositionMutation, useGetPositionsQuery } from '@/redux/services/apiSlice';
-import { Position } from '@/types';
-
+import { useCreatePositionMutation, useClearPositionMutation, useGetPositionsQuery, useGetProductsQuery } from '@/redux/services/apiSlice';
+import { Position, Product } from '@/types';
+import Select from 'react-select';
 
 export default function WarehousePage() {
 
@@ -14,6 +14,9 @@ export default function WarehousePage() {
     const [positions, setPositions] = useState<Position[]>([]);
     const [loading, setLoading] = useState(true); 
 
+    const [products, setProducts] = useState<Product[]>([]);
+    const [selectedProduct, setSelectedProduct] = useState(0);
+
     const containerRef = useRef<HTMLDivElement | null>(null);
     const scene = useRef<THREE.Scene | null>(null);
     const camera = useRef<THREE.PerspectiveCamera | null>(null);
@@ -21,18 +24,24 @@ export default function WarehousePage() {
     const cubesGroup = useRef<THREE.Group | null>(null);
     const orbitControls = useRef<OrbitControls | null>(null)
 
-    const { data, error, isLoading } = useGetPositionsQuery(null);
+    const { data: productsData, error: productsError, isLoading: productsLoading } = useGetProductsQuery(null);
+    const { data: positionsData, error: positionError, isLoading: positionLoading } = useGetPositionsQuery(null);
     const [ createPosition ] = useCreatePositionMutation()
     const [ clearPosition ] = useClearPositionMutation()
 
 
     useEffect(() => {
-      if(data){
-        setPositions(data)
-        console.log(data)
-      }
-      setLoading(false)
-    },[data, error, isLoading]);
+        if(positionsData){
+            setPositions(positionsData)
+        }
+        setLoading(positionLoading)
+    },[positionsData, positionError, positionLoading]);
+
+    useEffect(() => {
+        if(productsData){
+            setProducts(productsData)
+        }
+    }, [productsData, productsError, productsLoading]);
 
     const createStands = (x:number) => {
         if (!scene.current) return;
@@ -291,23 +300,28 @@ export default function WarehousePage() {
 
 
     useEffect(() => {
-      if(positions.length > 0){
-        createRack(-5.5);
-      }
+        if(positions.length > 0){
+            createRack(-5.5);
+        }
     }, [positions]);
 
 
     const handleProductSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const fomrData = new FormData(e.currentTarget);
         try {
-          createPosition({
-            product: fomrData.get("product"),
-            position: selectedPositionInfo,
-          })
-          setOpenModal(false);
+            if (!selectedProduct) {
+                console.log("No se ha seleccionado un producto.");
+                return;
+            }
+            createPosition({
+                product: selectedProduct,
+                position: selectedPositionInfo,
+            });
+
+            setOpenModal(false);
+            setSelectedProduct(0);
         } catch (error) {
-          console.log(error);
+            console.log(error);
         }
     }
 
@@ -315,12 +329,17 @@ export default function WarehousePage() {
     const handleOccupiedChange = async (position: Position) => {
         position.occupied = false;
         try {
-          clearPosition(position)
-          setOpenModal(false);
+            clearPosition(position)
+            setOpenModal(false);
         } catch (error) {
             console.error('Error al actualizar la posición:', error);
         }
     }
+
+    const productOptions = products.map(product => ({
+        value: product.id,
+        label: `${product.ERP} - ${product.SKU}`,
+    }));
 
 
     return (
@@ -328,31 +347,32 @@ export default function WarehousePage() {
             <div ref={containerRef}>
             {openModal && selectedPositionInfo && (
                 <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50" onClick={(e) => e.stopPropagation()} >
-                <div className="modal bg-white p-4 border border-gray-300 shadow-lg">
-                    <h2 className="text-xl font-bold mb-4">Editar Información</h2>
-                    <form onSubmit={handleProductSubmit} className='bg-neutral-100 px-8 py-10'>
-                        <input 
-                            type="text" 
-                            placeholder='Producto' 
-                            name='product'
-                            className='bg-zinc-200 px-4 py-2 block mb-2 rounded'
-                        />
-                        <button className='bg-sky-300 px-4 py-2 block mb-2 rounded'>Agregar producto</button>
-                    </form>
-                    <button
-                        className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-4"
-                        onClick={() => handleOccupiedChange(selectedPositionInfo)}
-                    >
-                        Marcar como Desocupado
-                    </button>
-                    <p>Position Code: {selectedPositionInfo.position_code}</p>
-                    <button
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
-                        onClick={() => setOpenModal(false)}
-                    >
-                        Cerrar Modal
-                    </button>
-                </div>
+                    <div className="modal bg-white p-4 border border-gray-300 shadow-lg">
+                        <h2 className="text-xl font-bold mb-4">Editar Información</h2>
+                        <form onSubmit={handleProductSubmit} className='bg-neutral-100 px-8 py-10'>
+                            <Select
+                                options={productOptions}
+                                value={productOptions.find(option => option.value === selectedProduct)}
+                                onChange={(selectedOption) => setSelectedProduct(selectedOption?.value || 0)}
+                                isSearchable={true}
+                                className='bg-zinc-200 rounded my-4'
+                            />
+                            <button className='bg-sky-300 px-4 py-2 block mb-2 rounded'>Agregar producto</button>
+                        </form>
+                        <button
+                            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-4"
+                            onClick={() => handleOccupiedChange(selectedPositionInfo)}
+                        >
+                            Marcar como Desocupado
+                        </button>
+                        <p>Position Code: {selectedPositionInfo.position_code}</p>
+                        <button
+                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
+                            onClick={() => setOpenModal(false)}
+                        >
+                            Cerrar Modal
+                        </button>
+                    </div>
                 </div>
             )}
             <ControlPanel
